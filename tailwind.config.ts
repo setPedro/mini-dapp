@@ -9,10 +9,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        accent: "#00FFC6", // Neon Mint (used for interactive elements like buttons or highlights)
-        primary: "#1A73E8", // Soft Blue (main color for links or key text)
-        background: "#121212", // Dark Background (overall background of the dApp)
-        foreground: "#E0E0E0", // Light Grey (for text and icons to contrast against background)
+        accent: "#FFA500", // Bright Halloween orange for accents
+        primary: "#3F3F46", // Sophisticated dark gray for main elements (remains unchanged)
+        background: "#09090B", // Very dark, almost black background (remains unchanged)
+        foreground: "#18181B", // Dark gray for surfaces/cards (remains unchanged)
+        deposit: "#0CD982", // Slightly lighter accent for deposits
+        withdraw: "#F93232", // Slightly lighter red for withdrawals
+        text: {
+          primary: "#F4F4F5", // Almost white text (remains unchanged)
+          secondary: "#A1A1AA", // Muted text (remains unchanged)
+        },
+        border: "#27272A", // Subtle borders (remains unchanged)
+        hover: {
+          accent: "#FFB84D", // Lighter orange for hover states
+          primary: "#52525B", // Lighter primary for hover states (remains unchanged)
+        },
       },
     },
   },

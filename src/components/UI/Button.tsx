@@ -1,30 +1,48 @@
-import { cn } from "@/lib"
+import { cn } from "@/lib";
 
 type ButtonProps = {
-  children: React.ReactNode
-  onClick: () => void
-  size: "icon" | "md" | "lg"
-  color: "primary" | "accent"
-}
+  children: React.ReactNode;
+  onClick: () => void;
+  size: "icon" | "md" | "lg";
+  color: "primary" | "accent" | "deposit" | "withdraw";
+  className?: string;
+  disabled?: boolean;
+};
 
-export default function Button({ children, onClick, size, color }: ButtonProps) {
+export default function Button({
+  children,
+  onClick,
+  size,
+  color,
+  className,
+}: ButtonProps) {
   const classNames = {
-    common: "rounded-md font-bold hover:opacity-70 transition duration-300",
+    common:
+      "flex items-center rounded-md font-bold hover:opacity-70 transition duration-300",
     sizes: {
       icon: "p-[7px] sm:p-[9px] md:p-[13px]",
       md: "text-sm sm:text-base px-4 py-2",
-      lg: "text-base sm:text-lg px-8 py-4"
+      lg: "text-base sm:text-lg px-8 py-4",
     },
     colors: {
-      accent: "bg-accent",
+      accent: "bg-accent text-background",
       primary: "bg-primary",
+      deposit: "bg-deposit",
+      withdraw: "bg-withdraw",
     },
-  }
+  };
 
   return (
-    <div className={cn(classNames.common, classNames.sizes[size], classNames.colors[color])} onClick={onClick}>
+    <div
+      className={cn(
+        classNames.common,
+        classNames.sizes[size],
+        classNames.colors[color],
+        className
+      )}
+      onClick={onClick}
+    >
       {children}
     </div>
-  )
+  );
 }
-
