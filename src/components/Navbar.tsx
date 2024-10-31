@@ -29,17 +29,20 @@ export default function Navbar() {
           </>
         )}
       </div>
-      <Button
-        onClick={() =>
-          isConnected
-            ? setIsModalOpen(true)
-            : connect({ connector: mainConnector })
-        }
-        size="md"
-        color="accent"
-      >
-        {isConnected ? formatAddress(address) : "Connect Wallet"}
-      </Button>
+      {isConnected && (
+        <Button
+          onClick={() =>
+            isConnected
+              ? setIsModalOpen(true)
+              : connect({ connector: mainConnector })
+          }
+          size="md"
+          color="accent"
+        >
+          {isConnected ? formatAddress(address) : "Connect Wallet"}
+        </Button>
+      )}
+
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)} className="">
           <Button
