@@ -1,11 +1,9 @@
 import { capitalizeFirstLetter, cn } from "@/lib";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import Button from "../../UI/Button";
 
 type TxInputProps = {
   action: "deposit" | "withdraw";
-  amount: number | "";
-  setAmount: Dispatch<SetStateAction<number | "">>;
   available?: string;
   onSubmitted: (amount: number) => void;
 };
@@ -27,12 +25,6 @@ export default function TxInput({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-
-    // Allow empty input
-    if (value === "") {
-      setAmount("");
-      return;
-    }
 
     // Only allow numeric input with one decimal point
     if (/^\d*\.?\d*$/.test(value)) {
@@ -64,7 +56,6 @@ export default function TxInput({
           size={"md"}
           color={action}
           className={cn("rounded-l-none")}
-          disabled={!amount || isNaN(parseFloat(amount))}
         >
           {capitalizeFirstLetter(action)}
         </Button>

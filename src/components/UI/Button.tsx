@@ -6,7 +6,6 @@ type ButtonProps = {
   size: "icon" | "md" | "lg";
   color: "primary" | "accent" | "deposit" | "withdraw";
   className?: string;
-  disabled?: boolean;
 };
 
 export default function Button({

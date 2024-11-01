@@ -4,7 +4,7 @@ import { ReactNode, MouseEvent } from "react";
 type Props = {
   children: ReactNode;
   onClose: () => void;
-  className: string;
+  className?: string;
 };
 
 export const Modal = ({ children, onClose, className }: Props) => {
