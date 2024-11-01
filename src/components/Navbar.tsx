@@ -3,15 +3,20 @@
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import Button from "./UI/Button";
 import { formatAddress } from "@/lib";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "./UI/Modal";
 import Link from "next/link";
 
 export default function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
-  const { isConnected, address } = useAccount();
+  const { isConnected: accountConnected, address } = useAccount();
+
+  useEffect(() => {
+    setIsConnected(accountConnected);
+  }, [accountConnected]);
 
   const handleWalletClick = () => {
     isConnected ? setIsModalOpen(true) : connect({ connector: connectors[0] });
