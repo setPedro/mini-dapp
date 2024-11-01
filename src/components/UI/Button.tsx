@@ -17,7 +17,7 @@ export default function Button({
 }: ButtonProps) {
   const classNames = {
     common:
-      "flex items-center rounded-md font-bold hover:opacity-70 transition duration-300",
+      "flex items-center rounded-md font-bold hover:opacity-70 transition duration-300 hover:cursor-pointer",
     sizes: {
       icon: "p-[7px] sm:p-[9px] md:p-[13px]",
       md: "text-sm sm:text-base px-4 py-2",

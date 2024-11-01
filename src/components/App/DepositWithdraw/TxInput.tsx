@@ -1,25 +1,25 @@
 import { capitalizeFirstLetter, cn } from "@/lib";
-import { useState } from "react";
 import Button from "../../UI/Button";
 
 type TxInputProps = {
   action: "deposit" | "withdraw";
   available?: string;
-  onSubmitted: (amount: number) => void;
+  amount: string;
+  setAmount: (amount: string) => void;
+  onSubmitted: (amount: number) => Promise<void>
 };
 
 export default function TxInput({
   action,
   available,
+  amount,
+  setAmount,
   onSubmitted,
 }: TxInputProps) {
-  const [amount, setAmount] = useState<string>("");
-
   const handleSubmit = () => {
     const numAmount = parseFloat(amount);
     if (!isNaN(numAmount) && numAmount > 0) {
       onSubmitted(numAmount);
-      setAmount("");
     }
   };
 

@@ -39,7 +39,7 @@ export default function Navbar() {
       </Link>
 
       <Button onClick={handleWalletClick} size="md" color="accent">
-        {isConnected ? formatAddress(address) : "Connect Wallet"}
+        {formatAddress(address)}
       </Button>
 
       {isModalOpen && (

@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-import TxInput from "./TxInput";
-import { ethers, TransactionResponse } from "ethers";
+import { useEffect, useState, useCallback } from "react";
+import { ethers, Contract } from "ethers";
 import { useAccount } from "wagmi";
-import RecentTransactions from "./RecentTransactions";
+import TxInput from "./TxInput";
 
 const CONTRACT_ADDRESS = "0x7642B2b8F5409150E3151167e8b040C46D215aD4";
 const ERC20_ABI = [
@@ -13,62 +12,66 @@ const ERC20_ABI = [
 
 export default function DepositWithdraw() {
   const { address, isConnected } = useAccount();
-
-  const [balance, setBalance] = useState("0.0");
+  const [depositAmount, setDepositAmount] = useState<string>("");
+  const [withdrawAmount, setWithdrawAmount] = useState<string>("");
+  const [balance, setBalance] = useState("0.0000");
   const [provider, setProvider] = useState<ethers.BrowserProvider>();
+  const [contract, setContract] = useState<Contract>();
 
   useEffect(() => {
-    if (!isConnected) return;
+    if (!isConnected || !address) return;
 
-    async function initProvider() {
-      const _provider = new ethers.BrowserProvider((window as any).ethereum);
-      setProvider(_provider);
+    const initContract = async () => {
+      const newProvider = new ethers.BrowserProvider((window as any).ethereum);
+      setProvider(newProvider);
 
-      const contract = new ethers.Contract(
+      const newContract = new ethers.Contract(
         CONTRACT_ADDRESS,
         ERC20_ABI,
-        _provider
+        newProvider
       );
-      const userBalance = await contract.balanceOf(address as string);
-      setBalance(Number(ethers.formatEther(userBalance)).toFixed(4));
-    }
 
-    initProvider();
+      setContract(newContract);
+
+      const userBalance = await newContract.balanceOf(address);
+      setBalance(Number(ethers.formatEther(userBalance)).toFixed(4));
+    };
+
+    initContract();
   }, [isConnected, address]);
 
-  async function handleDeposit(depositAmount: number) {
-    if (!provider) return;
-    const signer = await provider.getSigner();
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, ERC20_ABI, signer);
-    const tx: TransactionResponse = await contract.deposit({
-      value: ethers.parseEther(depositAmount.toString()),
-    });
-    await tx.wait();
-
-    console.log("Deposit transaction confirmed:", tx);
-    updateBalance();
-  }
-
-  async function handleWithdraw(withdrawAmount: number) {
-    if (!provider) return;
-    const signer = await provider.getSigner();
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, ERC20_ABI, signer);
-
-    const tx: TransactionResponse = await contract.withdraw(
-      ethers.parseEther(withdrawAmount.toString())
-    );
-    await tx.wait();
-    console.log("Withdrawn:", tx);
-    updateBalance();
-  }
-
-  async function updateBalance() {
-    if (!provider) return;
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, ERC20_ABI, provider);
-    const userBalance = await contract.balanceOf(address as string);
-    console.log(userBalance);
+  const updateBalance = useCallback(async () => {
+    if (!contract || !address) return;
+    const userBalance = await contract.balanceOf(address);
     setBalance(Number(ethers.formatEther(userBalance)).toFixed(4));
-  }
+  }, [contract, address]);
+
+  const handleTransaction = useCallback(
+    async (action: "deposit" | "withdraw", amount: number) => {
+      if (!contract || !provider) return;
+      const signer = await provider.getSigner();
+      const signedContract = new ethers.Contract(
+        CONTRACT_ADDRESS,
+        ERC20_ABI,
+        signer
+      );
+
+      const tx = await (action === "deposit"
+        ? signedContract.deposit({
+            value: ethers.parseEther(amount.toString()),
+          })
+        : signedContract.withdraw(ethers.parseEther(amount.toString())));
+
+      await tx.wait();
+      await updateBalance();
+      // FIXME: refactor this shit. Unify everywhere
+      setDepositAmount("");
+      setWithdrawAmount("");
+    },
+    [contract, provider, updateBalance]
+  );
+
+  if (!isConnected) return null;
 
   return (
     <div className="w-full h-full flex flex-col items-center gap-8 border-2 border-accent border-b-0 rounded-t-3xl py-6 px-10 bg-foreground">
@@ -76,16 +79,21 @@ export default function DepositWithdraw() {
         <h1 className="text-3xl font-bold">My Wallet</h1>
         <p className="text-2xl font-bold opacity-70">{balance} ETH</p>
       </div>
+
       <div className="flex flex-col w-full gap-8 px-6">
-        <TxInput action="deposit" onSubmitted={handleDeposit} />
+        <TxInput
+          action="deposit"
+          amount={depositAmount}
+          setAmount={setDepositAmount}
+          onSubmitted={(amount) => handleTransaction("deposit", amount)}
+        />
         <TxInput
           action="withdraw"
           available={balance}
-          onSubmitted={handleWithdraw}
+          amount={withdrawAmount}
+          setAmount={setWithdrawAmount}
+          onSubmitted={(amount) => handleTransaction("withdraw", amount)}
         />
-      </div>
-      <div className="w-full px-6">
-        {/* <RecentTransactions address={address} provider={provider} /> */}
       </div>
     </div>
   );
