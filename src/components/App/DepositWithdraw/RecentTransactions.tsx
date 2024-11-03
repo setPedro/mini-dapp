@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ethers } from "ethers";
 import { mockTransactions } from "@/mocks";
 import { formatAddress } from "@/lib";

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { ethers, Contract } from "ethers";
+import { ethers, Contract, TransactionResponse } from "ethers";
 import { useAccount } from "wagmi";
 import TxInput from "./TxInput";
 
@@ -18,11 +18,12 @@ export default function DepositWithdraw() {
   const [provider, setProvider] = useState<ethers.BrowserProvider>();
   const [contract, setContract] = useState<Contract>();
 
+  // TODO: abstract util
   useEffect(() => {
     if (!isConnected || !address) return;
 
     const initContract = async () => {
-      const newProvider = new ethers.BrowserProvider((window as any).ethereum);
+      const newProvider = new ethers.BrowserProvider(window.ethereum);
       setProvider(newProvider);
 
       const newContract = new ethers.Contract(
@@ -40,6 +41,7 @@ export default function DepositWithdraw() {
     initContract();
   }, [isConnected, address]);
 
+  // TODO: move to services
   const updateBalance = useCallback(async () => {
     if (!contract || !address) return;
     const userBalance = await contract.balanceOf(address);
@@ -56,7 +58,7 @@ export default function DepositWithdraw() {
         signer
       );
 
-      const tx = await (action === "deposit"
+      const tx: TransactionResponse = await (action === "deposit"
         ? signedContract.deposit({
             value: ethers.parseEther(amount.toString()),
           })

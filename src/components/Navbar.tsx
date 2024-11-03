@@ -3,31 +3,24 @@
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import Button from "./UI/Button";
 import { formatAddress } from "@/lib";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Modal } from "./UI/Modal";
 import Link from "next/link";
+import useMounted from "@/hooks";
 
 export default function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
+  const isMounted = useMounted();
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
-  const { isConnected: accountConnected, address } = useAccount();
-
-  useEffect(() => {
-    setIsConnected(accountConnected);
-  }, [accountConnected]);
-
-  const handleWalletClick = () => {
-    isConnected ? setIsModalOpen(true) : connect({ connector: connectors[0] });
-  };
+  const { isConnected, address } = useAccount();
 
   const handleDisconnect = () => {
     disconnect();
     setIsModalOpen(false);
   };
 
-  if (!isConnected) return null;
+  if (!isMounted) return null;
 
   return (
     <div className="w-full flex items-center justify-between py-4 md:py-6 px-4 sm:px-9">
@@ -38,7 +31,15 @@ export default function Navbar() {
         Happy Halloween <span className="text-3xl">🎃</span>
       </Link>
 
-      <Button onClick={handleWalletClick} size="md" color="accent">
+      <Button
+        onClick={() =>
+          isConnected
+            ? setIsModalOpen(true)
+            : connect({ connector: connectors[0] })
+        }
+        size="md"
+        color="accent"
+      >
         {formatAddress(address)}
       </Button>
 

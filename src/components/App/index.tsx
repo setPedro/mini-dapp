@@ -3,15 +3,13 @@
 import { useAccount } from "wagmi";
 import { WalletConnector } from "./WalletConnector";
 import DepositWithdraw from "./DepositWithdraw";
-import { useEffect, useState } from "react";
+import useMounted from "@/hooks";
 
 export default function App() {
-  const [isConnected, setIsConnected] = useState(false);
-  const { isConnected: accountConnected } = useAccount();
+  const isMounted = useMounted();
+  const { isConnected } = useAccount();
 
-  useEffect(() => {
-    setIsConnected(accountConnected);
-  }, [accountConnected]);
+  if (!isMounted) return null;
 
   return (
     <div className="h-full w-full flex items-center justify-center px-40 pt-16">
